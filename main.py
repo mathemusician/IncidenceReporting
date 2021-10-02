@@ -35,6 +35,7 @@ def main():
         submitted = st.form_submit_button("Submit")
 # HEAD
         if submitted:
+            # Fetch Data from db
             st.write("slider", slider_val, "checkbox", checkbox_val)
 
 
