@@ -80,6 +80,7 @@ def main():
 
         submitted = st.form_submit_button("Submit")
         if submitted:
+            # Fetch Data from db
             st.write("slider", slider_val, "checkbox", checkbox_val)
 
 
