@@ -31,11 +31,19 @@ def main():
 
     with st.form("my_form"):
         st.write("Please Fill Out the Information Below")
+        incident_type = st.selectbox("Select Type or Incident", ( "Trip/Fall", "Heavy Equipment Violation", "Other"))
+        date = st.date_input("Enter Date")
+        description = st.text_area("Enter a brief description of the incidents,")
 
         submitted = st.form_submit_button("Submit")
 # HEAD
         if submitted:
             st.write("slider", slider_val, "checkbox", checkbox_val)
+
+
+    # date_time = st.text_input("Enter date and time, Ex: 9/1/2014 0:01:00", "")
+    # st.markdown(f"My input is : {text_input}")
+
 
 
 if __name__ == "__main__":
