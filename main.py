@@ -76,9 +76,11 @@ def main():
     map(extra, midpoint[0], midpoint[1], 11)
 
     with st.form("my_form"):
-        st.write("Please Fill Out Information Below")
+        st.write("Please Fill Out the Information Below")
 
         submitted = st.form_submit_button("Submit")
+        if submitted:
+            st.write("slider", slider_val, "checkbox", checkbox_val)
 
 
 if __name__ == "__main__":
