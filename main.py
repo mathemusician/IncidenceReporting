@@ -2,42 +2,46 @@ import base64
 from pathlib import Path
 import pandas as pd
 import streamlit
+import os
+from pathlib import Path
+
 import streamlit as st
 from PIL import Image
 
+file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+
+
 
 def main():
-    # run streamlit using command line **streamlit run /Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/main.py**
-    # this will grab the images and display them
-    #Change depending on your
-    img = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/ConocoPhillips-Logo-Small.png")
-    st.image(img, width=175, use_column_width=200)
+    # New LOGO that is resizd toreduce the amount of space between the logo and photo
+    img = Image.open(file_dir/"Images"/"logo-print.png")
+    st.image(img, width= 250,use_column_width=200)
 
-    img2 = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/background.jpeg")
-    st.image(img2, width=1260)
+    # img = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/logo-print.png")
+    # st.image(img, width= 250,use_column_width=200)
+
+    img2 = Image.open(file_dir/"Images"/"background.jpeg")
+    st.image(img2, width= 960,)
+
+    # img2 = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/background.jpeg")
+    # st.image(img2, width=960)
 
     #Title
     st.header("Incidents Reporting")
 
     with st.form("my_form"):
-        st.write("Please Fill Out Information Below")
-        # used for the submit button
+        st.write("Please Fill Out the Information Below")
+
         submitted = st.form_submit_button("Submit")
+# HEAD
         if submitted:
             st.write("slider", slider_val, "checkbox", checkbox_val)
+
 
 if __name__ == "__main__":
     main()
 
 
-# def simulate():
-#     img = Image.open("logo.jpg")
-#     st.image(img)
-#     print()
-#     # header_html = "<img src='data:image/png;base64,{}' class='img-fluid'>".formatimg_to_bytes("header.png")
-#     # st.markdown(header_html, unsafe_allow_html=True,)
-#
-#
 # def img_to_bytes(img_path):
 #     img_bytes = Path(img_path).read_bytes()
 #     encoded = base64.b64encode(img_bytes).decode()
