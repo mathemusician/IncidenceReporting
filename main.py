@@ -8,13 +8,12 @@ from PIL import Image
 
 
 def main():
-    # print("hey there")
-
-
-    img = Image.open("/Users/CARLOSPARLOUR/Documents/Python/practice/images/ConocoPhillips-Logo-Small.png")
+    # run streamlit using command line **streamlit run /Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/main.py**
+    # this will grab the images and display them
+    img = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/ConocoPhillips-Logo-Small.png")
     st.image(img, width= 150,use_column_width=200)
 
-    img2 = Image.open("/Users/CARLOSPARLOUR/Documents/Python/practice/images/background.jpeg")
+    img2 = Image.open("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/Images/background.jpeg")
     st.image(img2, width= 1440,)
 
 
@@ -22,29 +21,10 @@ def main():
 
     with st.form("my_form"):
         st.write("Please Fill Out Information Below")
-        #slider_val = st.slider("Form slider")
-        # checkbox_val = st.checkbox("Form checkbox")
-        # Every form must have a submit button.
-
+        # used for the submit button
         submitted = st.form_submit_button("Submit")
         # if submitted:
         #     st.write("slider", slider_val, "checkbox", checkbox_val)
-
-    # st.write("")
-
-    # path = st.text_input('/Users/CARLOSPARLOUR/Documents/Python/practice/IncidentsReporting.csv')
-    # if path:
-    #     df = pd.read_csv(path)
-    #     df
-
-
-    # st.image("/Users/CARLOSPARLOUR/Documents/Python/practice/images/ConocoPhillips-Logo.png")
-    # st.markdown
-    # st.image("/Users/CARLOSPARLOUR/Documents/Python/practice/images/background.jpeg")
-
-
-
-
 
 
 
