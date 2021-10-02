@@ -8,7 +8,7 @@ Create a solution that spreads awareness of, visualizes the importance of, and/o
 Example safety-related incidents: 1) Identification and reporting of tripping hazards 2) Personnel near heavy machinery 3) Escape of toxic gases
 
 ## Solution
-Web application that visualizes incidents, and informs the appropriate people ahead of time. Anonymous reporting is possible at the bottom of the webpage.
+Video data is collected to detect if someone has fallen, or if personnel are too near heavy machinery, or if another safety-related incident has happened. If a someone is too near heavy machinery, a notification will be sent out to them. Additionally, we have a webpage to visualize safety incidents geographically and topically, and we also have a place for people to write anonymous incidence reports.
 
 
 # Description
