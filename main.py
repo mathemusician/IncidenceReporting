@@ -23,8 +23,8 @@ def main():
         st.write("Please Fill Out Information Below")
         # used for the submit button
         submitted = st.form_submit_button("Submit")
-        # if submitted:
-        #     st.write("slider", slider_val, "checkbox", checkbox_val)
+        if submitted:
+            st.write("slider", slider_val, "checkbox", checkbox_val)
 
 if __name__ == "__main__":
     main()
