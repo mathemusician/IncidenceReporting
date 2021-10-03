@@ -11,23 +11,16 @@ import random
 import streamlit as st
 from PIL import Image
 
-import mysql.connector
-from dotenv import load_dotenv
-
 
 file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
 DATE_TIME = "date/time"
 DATA_URL = file_dir / "data.csv"
-table_columns = ['id', 'date', 'incident_type', 'location', 'longitude', 'latitude', 'description', 'FILE_URI']
 
 
 @st.cache(persist=True)
 def load_data(DATA_URL, nrows=None):
-    if(type(DATA_URL) == list):
-        data = pd.DataFrame(DATA_URL)
-        data.columns = table_columns
-    else:
-        data = pd.read_csv(DATA_URL, nrows=nrows)
+    data = pd.read_csv(DATA_URL, nrows=nrows)
+    
     lowercase = lambda x: str(x).lower()
     data.rename(lowercase, axis="columns", inplace=True)
     
@@ -74,72 +67,12 @@ def map(data, lat, lon, zoom):
 
 
 def main():
-
-    # """
-    # ==================
-    # INIT DATABASE
-    # ==================
-    # """
-    load_dotenv()
-    if(os.environ.get('DB_NAME') == None):
-        db = mysql.connector.connect(
-            host = os.environ.get('HOST'),
-            user = os.environ.get('DB_USER'),
-            passwd = os.environ.get('DB_PASSWORD'),
-        )
-
-        dbcursor = db.cursor()
-        dbcursor.execute("DROP DATABASE IncidentDatabase")
-        dbcursor.execute("CREATE DATABASE IncidentDatabase")
-        dbcursor.execute("USE IncidentDatabase")
-        dbcursor.execute("""
-            CREATE TABLE Incidents(
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                date DATETIME DEFAULT NOW(),
-                incident_type VARCHAR(255),
-                location VARCHAR(255),
-                longitude FLOAT,
-                latitude FLOAT,
-                description VARCHAR(1000),
-                FILE_URI VARCHAR(255)
-            )
-        """)
-
-        with open('.env', 'a') as envFile:
-            envFile.write('\nDB_NAME=IncidentDatabase\nTABLE_NAME=Incidents\n')
-
-    else:
-        db = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            passwd = "root",
-            database = os.environ.get('DB_NAME')
-        )
-        dbcursor = db.cursor()
-
-        # # Display Table
-        # dbcursor.execute("SELECT * FROM Incidents")
-        # print(dbcursor.column_names)
-        # for x in dbcursor:
-        #     print(x,)
-        # print('\n\n')
-
-
-    # """
-    # ==================
-    # END INIT DATABASE
-    # ==================
-    # """
-
-    global lat
-    img = Image.open(file_dir / "Images" / "logo-print.png")
+    img = Image.open(file_dir / "Images" / "ConocoPhillips-Logo.png")
     st.image(img, width=200, use_column_width=200)
 
     img2 = Image.open(file_dir / "Images" / "background.jpeg")
     st.image(img2,
              caption="No task is so important that we can’t take the time to do it safely. A safe company is a successful company.")
-
-    # st.image(img2, width=1260)
 
     # Title
     st.header("Incidents Reporting")
@@ -192,25 +125,6 @@ def main():
             long_ID = csv_location[1]
             lat_ID = csv_location[2]
             # print(csv_location[0], csv_location[1], csv_location[2])
-            
-            # Push to DB
-            dbcursor.execute("""
-                INSERT INTO {} (date, incident_type, location, longitude, latitude, description, FILE_URI)
-                VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}')
-            """.format(
-                os.environ.get('TABLE_NAME'),
-                date or 'NULL',
-                incident_type or 'NULL',
-                location or 'NULL',
-                long_ID or 'NULL',
-                lat_ID or 'NULL',
-                description or 'NULL',
-                uploaded_file or 'NULL',
-            ))
-            db.commit()
-
-
-    # print(test_data[["lat", "lon"]])
 
     # used to display the map
     with st.form("my_map"):
@@ -229,28 +143,6 @@ def main():
                 st.text("not ready")
 
             # st.write("slider", slider_val, "checkbox", checkbox_val)
-
-            dbcursor.execute("""
-                SELECT * FROM {}
-                WHERE incident_type='{}'
-            """.format(
-                os.environ.get('TABLE_NAME'),
-                map_display
-            ))
-
-            selected_data = [x for x in dbcursor]
-            if len(selected_data) > 0:
-                extra = load_data(selected_data)
-                midpoint = (np.average(extra['latitude']), np.average(extra['longitude']))
-                st.write("Now Displaying Data for '{}'".format(map_display))
-                map(extra, midpoint[0], midpoint[1], 11)
-                st.write(extra)
-            else:
-                st.write('No Incidents Reported!')
-
-
-    # map(extra, midpoint[0], midpoint[1], 11)
-
 
 
 if __name__ == "__main__":
