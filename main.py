@@ -126,7 +126,7 @@ def main():
     ]
     csv_location = [0, 0, 0]
 
-    with st.form("my_form"):
+    with st.form("my_form",clear_on_submit=True):
         st.write("Please Fill Out the Information Below")
         # used for date in CSV file
         date = st.date_input("Enter Date")
