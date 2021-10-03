@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import pydeck as pdk
 import random
+from send_email import send_message
 
 import streamlit as st
 from PIL import Image
@@ -14,7 +15,7 @@ from PIL import Image
 
 file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
 DATE_TIME = "date/time"
-DATA_URL = file_dir / "data.csv"
+DATA_URL = file_dir / "data_long.csv"
 
 
 @st.cache(persist=True)
@@ -171,6 +172,8 @@ def main():
             base_ID = csv_location[0]
             long_ID = csv_location[1]
             lat_ID = csv_location[2]
+            print(description)
+            send_message(description)
             # print(csv_location[0], csv_location[1], csv_location[2])
 
     # used to display the map
