@@ -95,7 +95,7 @@ def main():
     # """
 
     load_dotenv()  # loads file_dir/".env"
-    '''if os.environ.get('DB_NAME') == None:
+    if os.environ.get('DB_NAME') == None:
         db = mysql.connector.connect(
             host = os.environ.get('DB_HOST'),
             user = os.environ.get('DB_USER'),
@@ -129,14 +129,14 @@ def main():
             passwd = "root",
             database = os.environ.get('DB_NAME')
         )
-        dbcursor = db.cursor()'''
+        dbcursor = db.cursor()
 
     # # Display Table
-    # dbcursor.execute("SELECT * FROM Incidents")
-    # print(dbcursor.column_names)
-    # for x in dbcursor:
-    #     print(x,)
-    # print('\n\n')
+    dbcursor.execute("SELECT * FROM Incidents")
+    print(dbcursor.column_names)
+    for x in dbcursor:
+         print(x,)
+    print('\n\n')
 
     # """
     # ==================
@@ -298,7 +298,7 @@ def main():
 
             # st.write("slider", slider_val, "checkbox", checkbox_val)
 
-            '''dbcursor.execute("""
+            dbcursor.execute("""
                 SELECT * FROM {}
                 WHERE incident_type='{}'
             """.format(
@@ -314,7 +314,7 @@ def main():
                 map(extra, midpoint[0], midpoint[1], 11)
                 st.write(extra)
             else:
-                st.write('No Incidents Reported!')'''
+                st.write('No Incidents Reported!')
 
     # map(extra, midpoint[0], midpoint[1], 11)
 
