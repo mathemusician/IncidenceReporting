@@ -35,10 +35,7 @@ def load_data(DATA_URL, nrows=None):
 extra = load_data(file_dir / "data_long.csv")
 extra = extra.dropna()
 
-
 # CREATING FUNCTION FOR MAPS
-
-
 def map(data, lat, lon, zoom):
     st.write(
         pdk.Deck(
@@ -65,12 +62,8 @@ def map(data, lat, lon, zoom):
         )
     )
 
-
-# midpoint = (np.average(extra['lat']), np.average(extra['lon']))
-
-
 def main():
-    img = Image.open(file_dir / "Images" / "ConocoPhillips-Logo.png")
+    img = Image.open(file_dir / "Images" / "logo-print.png")
     st.image(img, width=200, use_column_width=200)
 
     img2 = Image.open(file_dir / "Images" / "background.jpeg")
@@ -169,9 +162,6 @@ def main():
             "Enter a brief description, Include time, Number of people Involved and if Medical attention was required."
         )
         uploaded_file = st.file_uploader("Choose a file")
-        # if uploaded_file is not None:
-        # df = pd.read_csv(uploaded_file)
-        # st.write(dataframe)
 
         submitted = st.form_submit_button("Submit")
         if submitted:
