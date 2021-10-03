@@ -62,3 +62,17 @@ Video data is collected to detect if someone has fallen, or if personnel are too
 
 **What's next for your product?**
  - In the future, we hope to update our product in terms of specificity and scale. Some ideas that encompass this could include more incident types and more complex query abilities for the user.
+
+
+# Running the app
+
+ ```bash
+ streamlit run main.py
+ ```
+
+ # Running Machine Learning Algorithm
+
+ ```bash
+ cd Human-Falling-Detect-Tracks/
+ python main.py --device=cpu
+ ```
