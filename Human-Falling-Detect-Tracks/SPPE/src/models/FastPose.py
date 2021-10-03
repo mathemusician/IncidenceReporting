@@ -9,9 +9,9 @@ from SPPE.src.opt import opt
 class FastPose(nn.Module):
     DIM = 128
 
-    def __init__(self, backbone='resnet101', num_join=opt.nClasses):
+    def __init__(self, backbone="resnet101", num_join=opt.nClasses):
         super(FastPose, self).__init__()
-        assert backbone in ['resnet50', 'resnet101']
+        assert backbone in ["resnet50", "resnet101"]
 
         self.preact = SEResnet(backbone)
 
@@ -20,7 +20,8 @@ class FastPose(nn.Module):
         self.duc2 = DUC(256, 512, upscale_factor=2)
 
         self.conv_out = nn.Conv2d(
-            self.DIM, num_join, kernel_size=3, stride=1, padding=1)
+            self.DIM, num_join, kernel_size=3, stride=1, padding=1
+        )
 
     def forward(self, x: Variable):
         out = self.preact(x)

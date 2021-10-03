@@ -12,16 +12,24 @@ class TSSTG(object):
         weight_file: (str) Path to trained weights file.
         device: (str) Device to load the model on 'cpu' or 'cuda'.
     """
-    def __init__(self,
-                 weight_file='./Models/TSSTG/tsstg-model.pth',
-                 device='cpu'):
-        self.graph_args = {'strategy': 'spatial'}
-        self.class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
-                            'Stand up', 'Sit down', 'Fall Down']
+
+    def __init__(self, weight_file="./Models/TSSTG/tsstg-model.pth", device="cpu"):
+        self.graph_args = {"strategy": "spatial"}
+        self.class_names = [
+            "Standing",
+            "Walking",
+            "Sitting",
+            "Lying Down",
+            "Stand up",
+            "Sit down",
+            "Fall Down",
+        ]
         self.num_class = len(self.class_names)
         self.device = device
 
-        self.model = TwoStreamSpatialTemporalGraph(self.graph_args, self.num_class).to(self.device)
+        self.model = TwoStreamSpatialTemporalGraph(self.graph_args, self.num_class).to(
+            self.device
+        )
         self.model.load_state_dict(torch.load(weight_file, map_location="cpu"))
         self.model.eval()
 
@@ -36,9 +44,13 @@ class TSSTG(object):
         Returns:
             (numpy array) Probability of each class actions.
         """
-        pts[:, :, :2] = normalize_points_with_size(pts[:, :, :2], image_size[0], image_size[1])
+        pts[:, :, :2] = normalize_points_with_size(
+            pts[:, :, :2], image_size[0], image_size[1]
+        )
         pts[:, :, :2] = scale_pose(pts[:, :, :2])
-        pts = np.concatenate((pts, np.expand_dims((pts[:, 1, :] + pts[:, 2, :]) / 2, 1)), axis=1)
+        pts = np.concatenate(
+            (pts, np.expand_dims((pts[:, 1, :] + pts[:, 2, :]) / 2, 1)), axis=1
+        )
 
         pts = torch.tensor(pts, dtype=torch.float32)
         pts = pts.permute(2, 0, 1)[None, :]

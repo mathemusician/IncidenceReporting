@@ -95,18 +95,19 @@ def main():
     # """
 
     load_dotenv()  # loads file_dir/".env"
-    if os.environ.get('DB_NAME') == None:
+    if os.environ.get("DB_NAME") == None:
         db = mysql.connector.connect(
-            host = os.environ.get('DB_HOST'),
-            user = os.environ.get('DB_USER'),
-            passwd = os.environ.get('DB_PASSWORD'),
+            host=os.environ.get("DB_HOST"),
+            user=os.environ.get("DB_USER"),
+            passwd=os.environ.get("DB_PASSWORD"),
         )
 
         dbcursor = db.cursor()
         dbcursor.execute("DROP DATABASE IncidentDatabase")
         dbcursor.execute("CREATE DATABASE IncidentDatabase")
         dbcursor.execute("USE IncidentDatabase")
-        dbcursor.execute("""
+        dbcursor.execute(
+            """
             CREATE TABLE Incidents(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 date DATETIME DEFAULT NOW(),
@@ -117,17 +118,18 @@ def main():
                 description VARCHAR(1000),
                 FILE_URI VARCHAR(255)
             )
-        """)
+        """
+        )
 
-        with open('.env', 'a') as envFile:
-            envFile.write('\nDB_NAME=IncidentDatabase\nTABLE_NAME=Incidents\n')
+        with open(".env", "a") as envFile:
+            envFile.write("\nDB_NAME=IncidentDatabase\nTABLE_NAME=Incidents\n")
 
     else:
         db = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            passwd = "root",
-            database = os.environ.get('DB_NAME')
+            host="localhost",
+            user="root",
+            passwd="root",
+            database=os.environ.get("DB_NAME"),
         )
         dbcursor = db.cursor()
 
@@ -135,8 +137,10 @@ def main():
     dbcursor.execute("SELECT * FROM Incidents")
     print(dbcursor.column_names)
     for x in dbcursor:
-         print(x,)
-    print('\n\n')
+        print(
+            x,
+        )
+    print("\n\n")
 
     # """
     # ==================
@@ -298,23 +302,27 @@ def main():
 
             # st.write("slider", slider_val, "checkbox", checkbox_val)
 
-            dbcursor.execute("""
+            dbcursor.execute(
+                """
                 SELECT * FROM {}
                 WHERE incident_type='{}'
             """.format(
-                os.environ.get('TABLE_NAME'),
-                map_display
-            ))
+                    os.environ.get("TABLE_NAME"), map_display
+                )
+            )
 
             selected_data = [x for x in dbcursor]
             if len(selected_data) > 0:
                 extra = load_data(selected_data)
-                midpoint = (np.average(extra['latitude']), np.average(extra['longitude']))
+                midpoint = (
+                    np.average(extra["latitude"]),
+                    np.average(extra["longitude"]),
+                )
                 st.write("Now Displaying Data for '{}'".format(map_display))
                 map(extra, midpoint[0], midpoint[1], 11)
                 st.write(extra)
             else:
-                st.write('No Incidents Reported!')
+                st.write("No Incidents Reported!")
 
     # map(extra, midpoint[0], midpoint[1], 11)
 

@@ -63,6 +63,7 @@ def map(data, lat, lon, zoom):
         )
     )
 
+
 def main():
     img = Image.open(file_dir / "Images" / "logo-print.png")
     st.image(img, width=200, use_column_width=200)
@@ -128,7 +129,7 @@ def main():
     csv_location = [0, 0, 0]
 
     # Added ,clear_on_submit=True to clear the fields once the submit button hass been pressed
-    with st.form("my_form",clear_on_submit=True):
+    with st.form("my_form", clear_on_submit=True):
         st.write("Please Fill Out the Information Below")
         # used for date in CSV file
         date = st.date_input("Enter Date")
@@ -192,9 +193,21 @@ def main():
             elif map_display == "Trip/Fall":
                 # st.write("slider", slider_val, "checkbox", checkbox_val)
                 # map(data, lat, lon, zoom)
-                map(extra.loc[extra["incident type"]=="trip"][["lat", "lon"]], csv_location[2], csv_location[1], 10)
+                map(
+                    extra.loc[extra["incident type"] == "trip"][["lat", "lon"]],
+                    csv_location[2],
+                    csv_location[1],
+                    10,
+                )
             elif map_display == "Heavy Equipment Violation":
-                map(extra.loc[extra["incident type"]=="too close to heavy equipment"][["lat", "lon"]], csv_location[2], csv_location[1], 10)
+                map(
+                    extra.loc[extra["incident type"] == "too close to heavy equipment"][
+                        ["lat", "lon"]
+                    ],
+                    csv_location[2],
+                    csv_location[1],
+                    10,
+                )
 
             # st.write("slider", slider_val, "checkbox", checkbox_val)
 

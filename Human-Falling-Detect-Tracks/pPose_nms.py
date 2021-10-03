@@ -7,7 +7,7 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 import numpy as np
 
-''' Constant Configuration '''
+""" Constant Configuration """
 delta1 = 1
 mu = 1.7
 delta2 = 2.65
@@ -16,7 +16,7 @@ scoreThreds = 0.3
 matchThreds = 5
 areaThres = 0  # 40 * 40.5
 alpha = 0.1
-#pool = ThreadPool(4)
+# pool = ThreadPool(4)
 
 
 def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
@@ -67,11 +67,12 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
 
         # Delete humans who have more than matchThreds keypoints overlap and high similarity
         delete_ids = torch.from_numpy(np.arange(human_scores.shape[0]))[
-            (simi > gamma) | (num_match_keypoints >= matchThreds)]
+            (simi > gamma) | (num_match_keypoints >= matchThreds)
+        ]
 
         if delete_ids.shape[0] == 0:
             delete_ids = pick_id
-        #else:
+        # else:
         #    delete_ids = torch.from_numpy(delete_ids)
 
         merge_ids.append(human_ids[delete_ids])
@@ -86,8 +87,8 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
     preds_pick = ori_pose_preds[pick]
     scores_pick = ori_pose_scores[pick]
     bbox_scores_pick = ori_bbox_scores[pick]
-    #final_result = pool.map(filter_result, zip(scores_pick, merge_ids, preds_pick, pick, bbox_scores_pick))
-    #final_result = [item for item in final_result if item is not None]
+    # final_result = pool.map(filter_result, zip(scores_pick, merge_ids, preds_pick, pick, bbox_scores_pick))
+    # final_result = [item for item in final_result if item is not None]
 
     for j in range(len(pick)):
         ids = np.arange(pose_preds.shape[1])
@@ -99,7 +100,11 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
         # Merge poses
         merge_id = merge_ids[j]
         merge_pose, merge_score = p_merge_fast(
-            preds_pick[j], ori_pose_preds[merge_id], ori_pose_scores[merge_id], ref_dists[pick[j]])
+            preds_pick[j],
+            ori_pose_preds[merge_id],
+            ori_pose_scores[merge_id],
+            ref_dists[pick[j]],
+        )
 
         max_score = torch.max(merge_score[ids])
         if max_score < scoreThreds:
@@ -113,13 +118,17 @@ def pose_nms(bboxes, bbox_scores, pose_preds, pose_scores):
         if 1.5 ** 2 * (xmax - xmin) * (ymax - ymin) < areaThres:
             continue
 
-        final_result.append({
-            'bbox': bboxs_pick[j],
-            'bbox_score': bbox_scores_pick[j],
-            'keypoints': merge_pose - 0.3,
-            'kp_score': merge_score,
-            'proposal_score': torch.mean(merge_score) + bbox_scores_pick[j] + 1.25 * max(merge_score)
-        })
+        final_result.append(
+            {
+                "bbox": bboxs_pick[j],
+                "bbox_score": bbox_scores_pick[j],
+                "keypoints": merge_pose - 0.3,
+                "kp_score": merge_score,
+                "proposal_score": torch.mean(merge_score)
+                + bbox_scores_pick[j]
+                + 1.25 * max(merge_score),
+            }
+        )
 
     return final_result
 
@@ -135,7 +144,8 @@ def filter_result(args):
 
     # Merge poses
     merge_pose, merge_score = p_merge_fast(
-        pred_pick, ori_pose_preds[merge_id], ori_pose_scores[merge_id], ref_dists[pick])
+        pred_pick, ori_pose_preds[merge_id], ori_pose_scores[merge_id], ref_dists[pick]
+    )
 
     max_score = torch.max(merge_score[ids])
     if max_score < scoreThreds:
@@ -150,9 +160,11 @@ def filter_result(args):
         return None
 
     return {
-        'keypoints': merge_pose - 0.3,
-        'kp_score': merge_score,
-        'proposal_score': torch.mean(merge_score) + bbox_score_pick + 1.25 * max(merge_score)
+        "keypoints": merge_pose - 0.3,
+        "kp_score": merge_score,
+        "proposal_score": torch.mean(merge_score)
+        + bbox_score_pick
+        + 1.25 * max(merge_score),
     }
 
 
@@ -168,15 +180,14 @@ def p_merge(ref_pose, cluster_preds, cluster_scores, ref_dist):
         final_pose:     merged pose             -- [17, 2]
         final_score:    merged score            -- [17]
     """
-    dist = torch.sqrt(torch.sum(
-        torch.pow(ref_pose[np.newaxis, :] - cluster_preds, 2),
-        dim=2
-    ))  # [n, 17]
+    dist = torch.sqrt(
+        torch.sum(torch.pow(ref_pose[np.newaxis, :] - cluster_preds, 2), dim=2)
+    )  # [n, 17]
 
     kp_num = 17
     ref_dist = min(ref_dist, 15)
 
-    mask = (dist <= ref_dist)
+    mask = dist <= ref_dist
     final_pose = torch.zeros(kp_num, 2)
     final_score = torch.zeros(kp_num)
 
@@ -188,17 +199,24 @@ def p_merge(ref_pose, cluster_preds, cluster_scores, ref_dist):
 
     for i in range(kp_num):
         cluster_joint_scores = cluster_scores[:, i][mask[:, i]]  # [k, 1]
-        cluster_joint_location = cluster_preds[:, i, :][mask[:, i].unsqueeze(
-            -1).repeat(1, 2)].view((torch.sum(mask[:, i]), -1))
+        cluster_joint_location = cluster_preds[:, i, :][
+            mask[:, i].unsqueeze(-1).repeat(1, 2)
+        ].view((torch.sum(mask[:, i]), -1))
 
         # Get an normalized score
         normed_scores = cluster_joint_scores / torch.sum(cluster_joint_scores)
 
         # Merge poses by a weighted sum
-        final_pose[i, 0] = torch.dot(cluster_joint_location[:, 0], normed_scores.squeeze(-1))
-        final_pose[i, 1] = torch.dot(cluster_joint_location[:, 1], normed_scores.squeeze(-1))
+        final_pose[i, 0] = torch.dot(
+            cluster_joint_location[:, 0], normed_scores.squeeze(-1)
+        )
+        final_pose[i, 1] = torch.dot(
+            cluster_joint_location[:, 1], normed_scores.squeeze(-1)
+        )
 
-        final_score[i] = torch.dot(cluster_joint_scores.transpose(0, 1).squeeze(0), normed_scores.squeeze(-1))
+        final_score[i] = torch.dot(
+            cluster_joint_scores.transpose(0, 1).squeeze(0), normed_scores.squeeze(-1)
+        )
 
     return final_pose, final_score
 
@@ -215,15 +233,14 @@ def p_merge_fast(ref_pose, cluster_preds, cluster_scores, ref_dist):
         final_pose:     merged pose             -- [17, 2]
         final_score:    merged score            -- [17]
     """
-    dist = torch.sqrt(torch.sum(
-        torch.pow(ref_pose[np.newaxis, :] - cluster_preds, 2),
-        dim=2
-    ))
+    dist = torch.sqrt(
+        torch.sum(torch.pow(ref_pose[np.newaxis, :] - cluster_preds, 2), dim=2)
+    )
 
     kp_num = 17
     ref_dist = min(ref_dist, 15)
 
-    mask = (dist <= ref_dist)
+    mask = dist <= ref_dist
     final_pose = torch.zeros(kp_num, 2)
     final_score = torch.zeros(kp_num)
 
@@ -245,11 +262,10 @@ def p_merge_fast(ref_pose, cluster_preds, cluster_scores, ref_dist):
 def get_parametric_distance(i, all_preds, keypoint_scores, ref_dist):
     pick_preds = all_preds[i]
     pred_scores = keypoint_scores[i]
-    dist = torch.sqrt(torch.sum(
-        torch.pow(pick_preds[np.newaxis, :] - all_preds, 2),
-        dim=2
-    ))
-    mask = (dist <= 1)
+    dist = torch.sqrt(
+        torch.sum(torch.pow(pick_preds[np.newaxis, :] - all_preds, 2), dim=2)
+    )
+    mask = dist <= 1
 
     # Define a keypoints distance
     score_dists = torch.zeros(all_preds.shape[0], all_preds.shape[1])
@@ -261,8 +277,9 @@ def get_parametric_distance(i, all_preds, keypoint_scores, ref_dist):
     # The predicted scores are repeated up to do broadcast
     pred_scores = pred_scores.repeat(1, all_preds.shape[0]).transpose(0, 1)
 
-    score_dists[mask] = torch.tanh(pred_scores[mask] / delta1) *\
-                        torch.tanh(keypoint_scores[mask] / delta1)
+    score_dists[mask] = torch.tanh(pred_scores[mask] / delta1) * torch.tanh(
+        keypoint_scores[mask] / delta1
+    )
 
     point_dist = torch.exp((-1) * dist / delta2)
     final_dist = torch.sum(score_dists, dim=1) + mu * torch.sum(point_dist, dim=1)
@@ -271,14 +288,10 @@ def get_parametric_distance(i, all_preds, keypoint_scores, ref_dist):
 
 
 def PCK_match(pick_pred, all_preds, ref_dist):
-    dist = torch.sqrt(torch.sum(
-        torch.pow(pick_pred[np.newaxis, :] - all_preds, 2),
-        dim=2
-    ))
-    ref_dist = min(ref_dist, 7)
-    num_match_keypoints = torch.sum(
-        dist / ref_dist <= 1,
-        dim=1
+    dist = torch.sqrt(
+        torch.sum(torch.pow(pick_pred[np.newaxis, :] - all_preds, 2), dim=2)
     )
+    ref_dist = min(ref_dist, 7)
+    num_match_keypoints = torch.sum(dist / ref_dist <= 1, dim=1)
 
     return num_match_keypoints

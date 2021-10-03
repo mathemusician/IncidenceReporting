@@ -14,6 +14,7 @@ class TrackState:
     are classified as `deleted` to mark them for removal from the set of active
     tracks.
     """
+
     Tentative = 1
     Confirmed = 2
     Deleted = 3
@@ -28,21 +29,20 @@ class Detection(object):
         keypoints: (float array) Of shape [node, pts].,
         confidence: (float) Confidence score of detection.
     """
+
     def __init__(self, tlbr, keypoints, confidence):
         self.tlbr = tlbr
         self.keypoints = keypoints
         self.confidence = confidence
 
     def to_tlwh(self):
-        """Get (top, left, width, height).
-        """
+        """Get (top, left, width, height)."""
         ret = self.tlbr.copy()
         ret[2:] = ret[2:] - ret[:2]
         return ret
 
     def to_xyah(self):
-        """Get (x_center, y_center, aspect ratio, height).
-        """
+        """Get (x_center, y_center, aspect ratio, height)."""
         ret = self.to_tlwh()
         ret[:2] += ret[2:] / 2
         ret[2] /= ret[3]
@@ -88,10 +88,10 @@ class Track:
         self.time_since_update += 1
 
     def update(self, kf, detection):
-        """Perform Kalman filter measurement update step.
-        """
-        self.mean, self.covariance = kf.update(self.mean, self.covariance,
-                                               detection.to_xyah())
+        """Perform Kalman filter measurement update step."""
+        self.mean, self.covariance = kf.update(
+            self.mean, self.covariance, detection.to_xyah()
+        )
         self.keypoints_list.append(detection.keypoints)
 
         self.hist += 1
@@ -100,8 +100,7 @@ class Track:
             self.state = TrackState.Confirmed
 
     def mark_missed(self):
-        """Mark this track as missed (no association at the current time step).
-        """
+        """Mark this track as missed (no association at the current time step)."""
         if self.state == TrackState.Tentative:
             self.state = TrackState.Deleted
         elif self.time_since_update > self.max_age:
@@ -166,16 +165,28 @@ class Tracker:
                 unconfirmed_tracks.append(i)
 
         matches_a, unmatched_tracks_a, unmatched_detections = matching_cascade(
-            iou_cost, self.max_iou_dist, self.max_age, self.tracks, detections, confirmed_tracks
+            iou_cost,
+            self.max_iou_dist,
+            self.max_age,
+            self.tracks,
+            detections,
+            confirmed_tracks,
         )
 
         track_candidates = unconfirmed_tracks + [
-            k for k in unmatched_tracks_a if self.tracks[k].time_since_update == 1]
+            k for k in unmatched_tracks_a if self.tracks[k].time_since_update == 1
+        ]
         unmatched_tracks_a = [
-            k for k in unmatched_tracks_a if self.tracks[k].time_since_update != 1]
+            k for k in unmatched_tracks_a if self.tracks[k].time_since_update != 1
+        ]
 
         matches_b, unmatched_tracks_b, unmatched_detections = min_cost_matching(
-            iou_cost, self.max_iou_dist, self.tracks, detections, track_candidates, unmatched_detections
+            iou_cost,
+            self.max_iou_dist,
+            self.tracks,
+            detections,
+            track_candidates,
+            unmatched_detections,
         )
 
         matches = matches_a + matches_b
@@ -186,7 +197,7 @@ class Tracker:
         if detection.confidence < 0.4:
             return
         mean, covariance = self.kf.initiate(detection.to_xyah())
-        self.tracks.append(Track(mean, covariance, self._next_id, self.n_init, self.max_age))
+        self.tracks.append(
+            Track(mean, covariance, self._next_id, self.n_init, self.max_age)
+        )
         self._next_id += 1
-
-

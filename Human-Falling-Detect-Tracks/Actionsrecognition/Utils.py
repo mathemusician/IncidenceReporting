@@ -19,11 +19,8 @@ class Graph:
         - max_hop: (int) the maximal distance between two connected nodes.
         - dilation: (int) controls the spacing between the kernel points.
     """
-    def __init__(self,
-                 layout='coco_cut',
-                 strategy='uniform',
-                 max_hop=1,
-                 dilation=1):
+
+    def __init__(self, layout="coco_cut", strategy="uniform", max_hop=1, dilation=1):
         self.max_hop = max_hop
         self.dilation = dilation
 
@@ -32,15 +29,28 @@ class Graph:
         self.get_adjacency(strategy)
 
     def get_edge(self, layout):
-        if layout == 'coco_cut':
+        if layout == "coco_cut":
             self.num_node = 14
             self_link = [(i, i) for i in range(self.num_node)]
-            neighbor_link = [(6, 4), (4, 2), (2, 13), (13, 1), (5, 3), (3, 1), (12, 10),
-                             (10, 8), (8, 2), (11, 9), (9, 7), (7, 1), (13, 0)]
+            neighbor_link = [
+                (6, 4),
+                (4, 2),
+                (2, 13),
+                (13, 1),
+                (5, 3),
+                (3, 1),
+                (12, 10),
+                (10, 8),
+                (8, 2),
+                (11, 9),
+                (9, 7),
+                (7, 1),
+                (13, 0),
+            ]
             self.edge = self_link + neighbor_link
             self.center = 13
         else:
-            raise ValueError('This layout is not supported!')
+            raise ValueError("This layout is not supported!")
 
     def get_adjacency(self, strategy):
         valid_hop = range(0, self.max_hop + 1, self.dilation)
@@ -49,17 +59,16 @@ class Graph:
             adjacency[self.hop_dis == hop] = 1
         normalize_adjacency = normalize_digraph(adjacency)
 
-        if strategy == 'uniform':
+        if strategy == "uniform":
             A = np.zeros((1, self.num_node, self.num_node))
             A[0] = normalize_adjacency
             self.A = A
-        elif strategy == 'distance':
+        elif strategy == "distance":
             A = np.zeros((len(valid_hop), self.num_node, self.num_node))
             for i, hop in enumerate(valid_hop):
-                A[i][self.hop_dis == hop] = normalize_adjacency[self.hop_dis ==
-                                                                hop]
+                A[i][self.hop_dis == hop] = normalize_adjacency[self.hop_dis == hop]
             self.A = A
-        elif strategy == 'spatial':
+        elif strategy == "spatial":
             A = []
             for hop in valid_hop:
                 a_root = np.zeros((self.num_node, self.num_node))
@@ -68,9 +77,15 @@ class Graph:
                 for i in range(self.num_node):
                     for j in range(self.num_node):
                         if self.hop_dis[j, i] == hop:
-                            if self.hop_dis[j, self.center] == self.hop_dis[i, self.center]:
+                            if (
+                                self.hop_dis[j, self.center]
+                                == self.hop_dis[i, self.center]
+                            ):
                                 a_root[j, i] = normalize_adjacency[j, i]
-                            elif self.hop_dis[j, self.center] > self.hop_dis[i, self.center]:
+                            elif (
+                                self.hop_dis[j, self.center]
+                                > self.hop_dis[i, self.center]
+                            ):
                                 a_close[j, i] = normalize_adjacency[j, i]
                             else:
                                 a_further[j, i] = normalize_adjacency[j, i]
@@ -81,7 +96,7 @@ class Graph:
                     A.append(a_further)
             A = np.stack(A)
             self.A = A
-            #self.A = np.swapaxes(np.swapaxes(A, 0, 1), 1, 2)
+            # self.A = np.swapaxes(np.swapaxes(A, 0, 1), 1, 2)
         else:
             raise ValueError("This strategy is not supported!")
 
@@ -95,7 +110,7 @@ def get_hop_distance(num_node, edge, max_hop=1):
     # compute hop steps
     hop_dis = np.zeros((num_node, num_node)) + np.inf
     transfer_mat = [np.linalg.matrix_power(A, d) for d in range(max_hop + 1)]
-    arrive_mat = (np.stack(transfer_mat) > 0)
+    arrive_mat = np.stack(transfer_mat) > 0
     for d in range(max_hop, -1, -1):
         hop_dis[arrive_mat[d]] = d
     return hop_dis
@@ -107,7 +122,7 @@ def normalize_digraph(A):
     Dn = np.zeros((num_node, num_node))
     for i in range(num_node):
         if Dl[i] > 0:
-            Dn[i, i] = Dl[i]**(-1)
+            Dn[i, i] = Dl[i] ** (-1)
     AD = np.dot(A, Dn)
     return AD
 
@@ -118,6 +133,6 @@ def normalize_undigraph(A):
     Dn = np.zeros((num_node, num_node))
     for i in range(num_node):
         if Dl[i] > 0:
-            Dn[i, i] = Dl[i]**(-0.5)
+            Dn[i, i] = Dl[i] ** (-0.5)
     DAD = np.dot(np.dot(Dn, A), Dn)
     return DAD
