@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import numpy as np
 import pydeck as pdk
+import random
 
 import streamlit as st
 from PIL import Image
@@ -71,36 +72,37 @@ def main():
     st.header("Incidents Reporting")
     # test_data = pd.concat([data]*20, ignore_index=True)
 
+    with st.form("my_form"):
+        st.write("Please Fill Out the Information Below")
+        # used for date in CSV file
+        date = st.date_input("Enter Date")
+        #Used for incidents csv file, DOES NOT PREVENT OR CHECK FOR IDENTICAL NUMBERS YET
+        incident_number = random.randint(100000, 9999999)
+        #Used to select incident typer
+        incident_type = st.selectbox("Select Type or Incident", ( "Trip/Fall", "Heavy Equipment Violation", "Other"))
+        #Used for
+        description = st.text_area("Enter a brief description, Include time, Number of people Involved and if Medical attention was required.")
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            #Fetch Data from db
+            st.write("Submitted. Thank you for your Dedication to Safety.")
 
     # print(test_data[["lat", "lon"]])
 
-    # with st.form("my_form"):
-    #     map_display = st.selectbox("View our current Incidents", ( "","Trip/Fall", "Heavy Equipment Violation", "Other"))
-    #     submitted = st.form_submit_button("Submit")
-    #     if submitted:
-    #         if map_display == "Trip/Fall":
-    #             # st.write("slider", slider_val, "checkbox", checkbox_val)
-    #             map(extra, midpoint[0], midpoint[1], 11)
+    #used to display the map
+    with st.form("my_map"):
 
-    # map(extra, midpoint[0], midpoint[1], 11)
-
-    with st.form("my_form"):
-        st.write("Please Fill Out the Information Below")
-        incident_type = st.selectbox("Select Type or Incident", ( "Trip/Fall", "Heavy Equipment Violation", "Other"))
-        date = st.date_input("Enter Date")
-        description = st.text_area("Enter a brief description of the incidents,")
-        incident_number =
-
+        map_display = st.selectbox("View our current Incidents", ( "","Trip/Fall", "Heavy Equipment Violation", "Other"))
         submitted = st.form_submit_button("Submit")
         if submitted:
-            # Fetch Data from db
-            st.write("slider", slider_val, "checkbox", checkbox_val)
-
-
-    # date_time = st.text_input("Enter date and time, Ex: 9/1/2014 0:01:00", "")
-    # st.markdown(f"My input is : {text_input}")
-
-
+            if map_display == "Trip/Fall":
+                # st.write("slider", slider_val, "checkbox", checkbox_val)
+                map(extra, midpoint[0], midpoint[1], 11)
+            if map_display == "Heavy Equipment Violation":
+                st.text("not ready")
+            if map_display == "other":
+                st.text("not ready")
+    # map(extra, midpoint[0], midpoint[1], 11)
 
 if __name__ == "__main__":
     main()
