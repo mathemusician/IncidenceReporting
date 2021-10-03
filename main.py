@@ -12,24 +12,23 @@ import streamlit as st
 from PIL import Image
 
 file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-DATE_TIME = "date/time"
-DATA_URL = file_dir / "data.csv"
-
+DATE_TIME = "Date/Time"
 
 @st.cache(persist=True)
 def load_data(DATA_URL, nrows=None):
     data = pd.read_csv(DATA_URL, nrows=nrows)
     lowercase = lambda x: str(x).lower()
     data.rename(lowercase, axis="columns", inplace=True)
+    
     try:
         data[DATE_TIME] = pd.to_datetime(data[DATE_TIME])
     except KeyError:
         pass
+    
     return data
 
 
-data = load_data(DATA_URL)
-extra = load_data("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/heatmap-data.csv")
+extra = load_data(file_dir / "data_long.csv")
 extra = extra.dropna()
 
 
@@ -48,7 +47,7 @@ def map(data, lat, lon, zoom):
             pdk.Layer(
                 "HexagonLayer",
                 data=data,
-                get_position=["lng", "lat"],
+                get_position=["lon", "lat"],
                 radius=100,
                 elevation_scale=50,
                 elevation_range=[0, 3000],
@@ -60,13 +59,11 @@ def map(data, lat, lon, zoom):
     ))
 
 
-zoom_level = 12
-midpoint = (np.average(extra['lat']), np.average(extra['lng']))
+# midpoint = (np.average(extra['lat']), np.average(extra['lon']))
 
 
 def main():
-    global lat
-    img = Image.open(file_dir / "Images" / "logo-print.png")
+    img = Image.open(file_dir / "Images" / "ConocoPhillips-Logo.png")
     st.image(img, width=200, use_column_width=200)
 
     img2 = Image.open(file_dir / "Images" / "background.jpeg")
@@ -105,47 +102,11 @@ def main():
                                     "Sweeny Refinery", "Wood River Refinery", "SNE-1 well", "Warka well",
                                     "Eagle Ford Well",
                                     "Permian Basin Well", "Midland Well", "Houston office",))
-
-        if location == "Sweeny Refinery":
-            csv_location[0] = basenames[0]
-            csv_location[1] = longitudes[0]
-            csv_location[2] = latitudes[0]
-        elif location == "Wood River Refinery":
-            csv_location[0] = basenames[1]
-            csv_location[1] = longitudes[1]
-            csv_location[2] = latitudes[1]
-        elif location == "SNE-1 well":
-            csv_location[0] = basenames[2]
-            csv_location[1] = longitudes[2]
-            csv_location[2] = latitudes[2]
-        elif location == "Warka well":
-            csv_location[0] = basenames[3]
-            csv_location[1] = longitudes[3]
-            csv_location[2] = latitudes[3]
-        elif location == "Eagle Ford Well":
-            csv_location[0] = basenames[4]
-            csv_location[1] = longitudes[4]
-            csv_location[2] = latitudes[4]
-        elif location == "Permian Basin Well":
-            csv_location[0] = basenames[5]
-            csv_location[1] = longitudes[5]
-            csv_location[2] = latitudes[5]
-        elif location == "Eagle Ford Well":
-            csv_location[0] = basenames[6]
-            csv_location[1] = longitudes[6]
-            csv_location[2] = latitudes[6]
-        elif location == "Midland Well":
-            csv_location[0] = basenames[7]
-            csv_location[1] = longitudes[7]
-            csv_location[2] = latitudes[7]
-        elif location == "Houston office":
-            csv_location[0] = basenames[8]
-            csv_location[1] = longitudes[8]
-            csv_location[2] = latitudes[8]
-        else:
-            csv_location[0] = basenames[8]
-            csv_location[1] = longitudes[8]
-            csv_location[2] = latitudes[8]
+        
+        location_index = basenames.index(location)
+        csv_location[0] = basenames[location_index]
+        csv_location[1] = longitudes[location_index]
+        csv_location[2] = latitudes[location_index]
 
         description = st.text_area("Enter a brief description, Include time, Number of people Involved and if Medical attention was required.")
         uploaded_file = st.file_uploader("Choose a file")
@@ -174,7 +135,8 @@ def main():
         if submitted:
             if map_display == "Trip/Fall":
                 # st.write("slider", slider_val, "checkbox", checkbox_val)
-                map(extra, midpoint[0], midpoint[1], 11)
+                # map(data, lat, lon, zoom)
+                map(extra[["lat", "lon"]], csv_location[1], csv_location[2], 10)
             if map_display == "Heavy Equipment Violation":
                 st.text("not ready")
             if map_display == "other":
