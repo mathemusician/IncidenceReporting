@@ -185,7 +185,7 @@ def main():
             if map_display == "Trip/Fall":
                 # st.write("slider", slider_val, "checkbox", checkbox_val)
                 # map(data, lat, lon, zoom)
-                map(extra[["lat", "lon"]], csv_location[1], csv_location[2], 10)
+                map(extra[["lat", "lon"]], csv_location[2], csv_location[1], 10)
             if map_display == "Heavy Equipment Violation":
                 st.text("not ready")
             if map_display == "other":
