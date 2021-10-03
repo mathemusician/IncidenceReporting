@@ -1,6 +1,13 @@
-﻿// test3.cpp : Defines the entry point for the application.
+﻿// datageneration.cpp : Defines the entry point for the application.
 //
-
+//date - 1/1/2010-12/28/2020
+//It only generates dates between the 1st and 28th because it's an easy way to fix end of the month issues, can be extended a bit
+//incident Id - 15 digit random number
+//Incident type - tells exactly what situation the incident is. Currently only trip or too close to heavy equipment. Also has the event location in parentheses at the end
+//either is null or has a video link to a video of the incident
+//Lat-latitude of the location of the incident
+//Lon-longitude of the location of the incident
+//Base - base ID, starts with a B and has a 5 digit identifier after
 #include <fstream>
 #include <iostream>
 #include <string>

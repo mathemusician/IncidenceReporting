@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# environment
+!.env
+
+# machine-learning models
+Human-Falling-Detect-Tracks/Models/sppe/fast_res50_256x192.pth
+Human-Falling-Detect-Tracks/Models/sppe/fast_res101_320x256.pth
+Human-Falling-Detect-Tracks/Models/TSSTG/tsstg-model.pth
+Human-Falling-Detect-Tracks/Models/yolo-tiny-onecls/best-model.pth
+Human-Falling-Detect-Tracks/Models/yolo-tiny-onecls/yolov3-tiny-onecls.cfg
