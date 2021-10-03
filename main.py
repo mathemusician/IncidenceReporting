@@ -52,7 +52,7 @@ def map(data, lat, lon, zoom):
                     "HexagonLayer",
                     data=data,
                     get_position=["lon", "lat"],
-                    radius=100,
+                    radius=500,
                     elevation_scale=50,
                     elevation_range=[0, 3000],
                     pickable=True,
