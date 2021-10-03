@@ -127,6 +127,7 @@ def main():
     ]
     csv_location = [0, 0, 0]
 
+    # Added ,clear_on_submit=True to clear the fields once the submit button hass been pressed
     with st.form("my_form",clear_on_submit=True):
         st.write("Please Fill Out the Information Below")
         # used for date in CSV file
