@@ -181,18 +181,19 @@ def main():
 
         map_display = st.selectbox(
             "View our current Incidents",
-            ("", "Trip/Fall", "Heavy Equipment Violation", "Other"),
+            ("", "All", "Trip/Fall", "Heavy Equipment Violation", "Other"),
         )
         submitted = st.form_submit_button("Submit")
+
         if submitted:
-            if map_display == "Trip/Fall":
+            if map_display == "All":
+                map(extra[["lat", "lon"]], csv_location[2], csv_location[1], 10)
+            elif map_display == "Trip/Fall":
                 # st.write("slider", slider_val, "checkbox", checkbox_val)
                 # map(data, lat, lon, zoom)
-                map(extra[["lat", "lon"]], csv_location[2], csv_location[1], 10)
-            if map_display == "Heavy Equipment Violation":
-                st.text("not ready")
-            if map_display == "other":
-                st.text("not ready")
+                map(extra.loc[extra["incident type"]=="trip"][["lat", "lon"]], csv_location[2], csv_location[1], 10)
+            elif map_display == "Heavy Equipment Violation":
+                map(extra.loc[extra["incident type"]=="too close to heavy equipment"][["lat", "lon"]], csv_location[2], csv_location[1], 10)
 
             # st.write("slider", slider_val, "checkbox", checkbox_val)
 
