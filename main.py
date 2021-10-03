@@ -14,7 +14,7 @@ from PIL import Image
 
 file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
 DATE_TIME = "date/time"
-DATA_URL = file_dir / "data.csv"
+DATA_URL = file_dir / "data_long.csv"
 
 
 @st.cache(persist=True)
