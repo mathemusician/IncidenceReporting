@@ -15,10 +15,16 @@ Video data is collected to detect if someone has fallen, or if personnel are too
 
 
 **Inspiration for your submission**
- - comment
+ - Our inspirtaion came from Conoco Phillip's Spirit Values. We wanted to create something that represented these values and we believe our application does an excellent representation. 
+ - SAFETY - Safety is the core idea of our application. We wanted to provide an objective solution to safety.
+ - PEOPLE - The people is what drives this application. We gave them the power to view and upload data. 
+ - IINTEGRITY - Integrity is extremely important and this application provides transperancy to our people.
+ - RESPONSIBILITY - We believe everyone one is respsonisble and this will provide employees with more accountability. 
+ - IINNOVATION - Innovation is what powers this application our fall detection will help us identify safety issues througout Conoco Phillips.
+ - TEAMWORK - Together we can create technology to keep us safe and responsible. 
 
 **What your submission does**
- - comment
+ - Our Application
 
 **How you built it**
  - comment
