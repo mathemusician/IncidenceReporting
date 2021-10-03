@@ -38,7 +38,8 @@ def load_data(DATA_URL, nrows=None):
 
 
 data = load_data(DATA_URL)
-extra = load_data("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/heatmap-data.csv")
+# extra = load_data("/Users/CARLOSPARLOUR/Documents/Python/IncidenceReporting/heatmap-data.csv")
+extra = load_data("data.csv")
 extra = extra.dropna()
 
 
@@ -110,9 +111,9 @@ def main():
 
     else:
         db = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            passwd = "root",
+            host = os.environ.get('HOST'),
+            user = os.environ.get('DB_USER'),
+            passwd = os.environ.get('DB_PASSWORD'),
             database = os.environ.get('DB_NAME')
         )
         dbcursor = db.cursor()
@@ -132,7 +133,7 @@ def main():
     # """
 
     global lat
-    img = Image.open(file_dir / "Images" / "logo-print.png")
+    img = Image.open(file_dir / "Images" / "background.jpeg")
     st.image(img, width=200, use_column_width=200)
 
     img2 = Image.open(file_dir / "Images" / "background.jpeg")
@@ -221,7 +222,6 @@ def main():
 
         submitted = st.form_submit_button("Submit")
         if submitted:
-            # Fetch Data from db
             st.write("Submitted. Thank you for your dedication to safety.")
             # ##### used for the location
             base_ID = csv_location[0]
@@ -267,11 +267,13 @@ def main():
             ))
 
             selected_data = [x for x in dbcursor]
+            # print(selected_data)
             if len(selected_data) > 0:
                 extra = load_data(selected_data)
+                print(np.average(extra['latitude']))    
                 midpoint = (np.average(extra['latitude']), np.average(extra['longitude']))
                 st.write("Now Displaying Data for '{}'".format(map_display))
-                map(extra, midpoint[0], midpoint[1], 11)
+                map(extra, 69, -150, 11)
                 st.write(extra)
             else:
                 st.write('No Incidents Reported!')
