@@ -34,7 +34,6 @@ Video data is collected to detect if someone has fallen, or if personnel are too
  - Automatic fall detection and reporting using ML 
  - Fall recording logging using EchoAR
 
-
 **How you built it**
  - Streamlit
  - python
@@ -52,3 +51,13 @@ Video data is collected to detect if someone has fallen, or if personnel are too
 
 **What's next for your product?**
  - Integration with CCTV cameras
+ - Our team split up the work to most efficiently produce a working front end and back end. The front end of our product was constructed using Streamlit, which is a web-app framework that writes markdown from python. This allowed us to easily construct forms and display data in a visually easy-to-digest way for the user. Our data would be stored on a local SQL database such as MySQL, which was able to communicate with our product through the MySQL-Connector python library. Finally, our product also includes a machine learning model that can detect incedents and automatically report them and store the data in the database.
+
+**Challenges that you ran into, and how you overcame them**
+ - We faced adversities when attempting to integrate the different parts of our product together such as the database, machine learning, and the front end data visualization components. We overcame these by adapting a 
+
+**Accomplishments that you're proud of**
+ - We are proud of producing a Minimum Viable Product that we could showcase to the company and that we believe suits a broad set of use-cases.
+
+**What's next for your product?**
+ - In the future, we hope to update our product in terms of specificity and scale. Some ideas that encompass this could include more incident types and more complex query abilities for the user.
