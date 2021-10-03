@@ -10,6 +10,7 @@ import numpy as np
 from Detection.Utils import ResizePadding
 from CameraLoader import CamLoader, CamLoader_Q
 from DetectorLoader import TinyYOLOv3_onecls
+from send_email import send_message
 
 from PoseEstimateLoader import SPPE_FastPose
 from fn import draw_single
@@ -154,7 +155,7 @@ if __name__ == '__main__':
                 action_name = action_model.class_names[out[0].argmax()]
                 action = '{}: {:.2f}%'.format(action_name, out[0].max() * 100)
                 if action_name == 'Fall Down':
-                    print("FALL DETECTED")
+                    send_message("FALL DETECTED, CAMERA 1")
                     clr = (255, 0, 0)
                 elif action_name == 'Lying Down':
                     clr = (255, 200, 0)
